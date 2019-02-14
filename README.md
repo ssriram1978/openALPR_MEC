@@ -48,7 +48,7 @@ Note that the SIM card on the phone is configured in such a way that the packet 
 
 TEST ENVIRONMENT:
 ----------------
-![](openalpr demo.png)
+![](openalpr.png)
 
 STEP 1:
 -------
