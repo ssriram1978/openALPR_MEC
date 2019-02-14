@@ -34,6 +34,7 @@ Here a custom built android app running on a smartphone is used to emulate a tra
 
 Note that the SIM card on the phone is configured in such a way that the packet gateway always assigns a natted static ipv4 address to this SIM and that all the packets shall be pinned to a mobile edge computing platform and shall not be allowed to directly reach the internet.
 
+
                                             +--------------------------------------+
                                             |                                      |
 +--------------+       +-----------+        |   MOBILE EDGE COMPUTING PLATFORM     |
