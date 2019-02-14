@@ -26,12 +26,14 @@ The talk will go into details on how the Linux facilities are used.
 
 
 OPEN ALPR MEC POC:
+------------------
 
 This POC shows how linux traffic controller and linux namespace controller is used do route packets from a mobile phone to an edge compute network that runs automatic license plate recognition algorithm to figure out the license plate from a JPEG image.
 
 Here a custom built android app running on a smartphone is used to emulate a traffic camera that captures and sends a jpeg image of a vehicle which displays license plate.
 
 Note that the SIM card on the phone is configured in such a way that the packet gateway always assigns a natted static ipv4 address to this SIM and that all the packets shall be pinned to a mobile edge computing platform and shall not be allowed to directly reach the internet.
+
 
                                             +--------------------------------------+
                                             |                                      |
