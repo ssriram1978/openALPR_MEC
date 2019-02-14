@@ -35,16 +35,7 @@ This POC shows how linux traffic controller and linux namespace controller is us
 Here a custom built android app running on a smartphone is used to emulate a traffic camera that captures and sends a jpeg image of a vehicle which displays license plate.
 
 Note that the SIM card on the phone is configured in such a way that the packet gateway always assigns a natted static ipv4 address to this SIM and that all the packets shall be pinned to a mobile edge computing platform and shall not be allowed to directly reach the internet.
-
-
-                                            +--------------------------------------+
-                                            |                                      |
-+--------------+       +-----------+        |   MOBILE EDGE COMPUTING PLATFORM     |
-|  TRAFFIC     +------->   EDGE    +------->+  +-----------+   +------------+ +----+
-|   CAMERA     |       |   ROUTER  |        |  | ATCA CHASSIS with X86 CARDS.      |
-+--------------+       +-----------+        |  +--+---+---+---+-+--+--+-+--+-+---+-+
-                                            |  |  |   |   |   | |  |  | |  | |   | |
-                                            +--+--+---+---+---+-+--+--+-+--+-+---+-+
+![](arch.png)
 
 TEST ENVIRONMENT:
 ----------------
@@ -53,31 +44,7 @@ TEST ENVIRONMENT:
 STEP 1:
 -------
 Set up ingress and egress QDISC on the network interface card on the X86 card to where the mobile phone traffic is routed to.
-
-                +---------------+
-                | ATCA x86 CARD |
-                |               |
-                |               |
-                |               |
-                |               |            +------------+
-     IMGRESS    |               |            |            |
-     QDISC ffff:|   +----+      |  EGRESS    |   LOCAL    |
-  +---------------->+NIC <---------QDISC-----+   HOST     |
-                |   +----+      |  1:        |            |
-tc qdisc add dev eth0 ingress   |            +------------+
-                |               |  tc qdisc add dev eth0 root handle 1: fq
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                |               |
-                +---------------+
+![](step1.png)
 
 STEP 2:
 -------
@@ -102,24 +69,7 @@ STEP 3:
 -------
 
 Set up a namespace container as shown below.
-                 +-----------------------------------------------------------------+
-                 |        MEC x86 CARD.                                            |
-                 |                                                                 |
-                 |                                 +-----------------------------+ |
-+------------+   |                                 |  LINUX NAMESPACE            | |
-|            |   |                                 | CONTAINER                   | |
-|TCP socket  |   |                                 | (imagedetection)  +------+  | |
-|from client |   |                                 |                   |      |  | |
-|with port   |   +---------+      +---------------------------------+  |ALPR  |  | |
-|12345      +----+NIC eth0 +------>IMAGE_HOST_VETH | IMAGE_CONT_VETH+-->IMAGE |  | |
-|            |   +---------+      +---------------------------------+  |DETECT|  | |
-|            |   |                                 |                   +------+  | |
-|            |   |                                 |                             | |
-+------------+   |                                 |                             | |
-                 |                                 +-----------------------------+ |
-                 |                                                                 |
-                 +-----------------------------------------------------------------+
-
+![](step3.png)
 
 ip netns add imagedetection
 ip -n imagedetection link set dev lo up
@@ -146,22 +96,7 @@ STEP 4:
 -------
 
 Setup tc rules on the ingress QDISC of eth0 where packets from external world (Mobile phone) are queued up.
-                             +---------------------------------+
-                             |
-                             |  MEC x86 card
-                             |
-+---------------+            |
-|IPv4 packet    |            |
-|from Camera    |     +------+----------+     +-----------------+
-|with TCP       |     | Ingress QDISC   |     |IMAGE_HOST_VETH  |
-|dst port 12345 |     | ffff: on eth0   |     +-----------------+
-|               |     +------+----------+
-|               |            |
-+---------------+            |
-                             |
-                             |
-                             |
-                             +--------------------------------------+
+![](step4.png)
 
 
 tc filter add dev eth0 parent ffff: prio 1 protocol ip u32 \
@@ -187,19 +122,16 @@ filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 te
 	Action statistics:
 	Sent 2459206 bytes 1764 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 2: skbmod pipe set dmac 70:00:00:00:00:00 
 	 index 14 ref 1 bind 1 installed 9031 sec used 849 sec
 	Action statistics:
 	Sent 2459206 bytes 1764 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 3:  skbedit ptype host pipe
 	 index 7 ref 1 bind 1 installed 9031 sec used 849 sec
  	Action statistics:
 	Sent 2459206 bytes 1764 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 4: mirred (Egress Redirect to device IMAGE_HOST_VETH) stolen
  	index 7 ref 1 bind 1 installed 9031 sec used 849 sec
  	Action statistics:
@@ -211,21 +143,8 @@ STEP 5:
 -------
 Set up tc rules on the ingress QDISC on the VETH plugged into the namespace container. These tc rules can be used to accept the packet and also identify flags in the L4 protocol (TCP SYN, ACK…)
 
-+-------------------------------------------------------+
-|           LINUX   NAMESPACE CONTAINER                 |
-|           (imagedetection)                            |
-|                                                       |
-+----------------+                     +-------------+  |
-||IMAGE_CONT_VETH+-------------------->+ALPR server. |  |
-+----------------+                     +-------------+  |
-|                                                       |
-| MATCH TCP SYN AND ACCEPT IT.                          |
-| ---------------------------------                     |
-| tc -n imagedetection filter add dev IMAGE_CONT_VETH prio 1 parent ffff: protocol ip u32 \
-|       match ip protocol 0x6 0xff \                    |
-|       match u8 0x2 0xff at 33 \                       |
-|       match ip dport 12345 0xff \                     |
-|       action skbedit ptype host                       |
+![](step5.png)
+
 
   MATCH TCP ACK AND ACCEPT IT.
   ---------------------------------
@@ -283,33 +202,8 @@ STEP 6
 -------
 Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card to route the packets coming from the namespace container back to the mobile phone.
 
-     +---------------------------------+
-     |
-     |
-     |
-     |
-     |                                 +----------------------+
-     |                                 |LINUX                 |
-     |                                 |NAMESPACE             |
-+----+--+            +-----------------+CONTAINER             |
-|  eth0 +<-----------+IMAGE_HOST_VETH  |imagedetection        |
-+----+--+            +-----------------+                      |
-     |                                 |                      |
-     |                                 |                      |
-     |                                 +----------------------+
-     |              MATCH TCP PROTOCOL and SOURCE PORT 12345,
-     |              match the TCP FLAG SYN ACK,
-     |              set the source MAC as the MAC address of eth0
-     |              and dest mac as the MAC address of the next hop (EDGE router).
-     |
-     |              tc filter add dev $specified_veth parent ffff: prio 1 protocol ip u32 \
-     |                  match ip protocol 0x6 0xff \
-     |                  match ip sport 12345 0xff \
-     |                  match u8 0x12 0xff at 33 \
-     +------------      action skbedit ptype host \
-                        action skbmod dmac e4:d3:f1:b1:b4:83 \
-                        action skbmod smac 5c:b9:01:c3:d9:38 \
-                        action mirred egress redirect dev eth0
+![](step6.png)
+
 	
 MATCH TCP PROTOCOL, FOR ALL OTHER FLAGS, set SOURCE PORT 12345, 
 set the source MAC as the MAC address of eth0
@@ -336,19 +230,16 @@ filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 te
  	Action statistics:
 	Sent 60 bytes 1 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 2: skbmod pipe set dmac e4:d3:f1:b1:b4:83 
 	 index 15 ref 1 bind 1 installed 8923 sec used 743 sec
 	Action statistics:
 	Sent 60 bytes 1 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 3: skbmod pipe set smac 5c:b9:01:c3:d9:38 
 	 index 16 ref 1 bind 1 installed 8923 sec used 743 sec
 	Action statistics:
 	Sent 60 bytes 1 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 4: mirred (Egress Redirect to device eth0) stolen
  	index 14 ref 1 bind 1 installed 8923 sec used 743 sec
  	Action statistics:
@@ -365,19 +256,16 @@ filter protocol ip pref 2 u32 chain 0 fh 801::800 order 2048 key ht 801 bkt 0 te
  	Action statistics:
 	Sent 53396 bytes 1010 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 2: skbmod pipe set dmac e4:d3:f1:b1:b4:83 
 	 index 17 ref 1 bind 1 installed 8923 sec used 741 sec
 	Action statistics:
 	Sent 53396 bytes 1010 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 3: skbmod pipe set smac 5c:b9:01:c3:d9:38 
 	 index 18 ref 1 bind 1 installed 8923 sec used 741 sec
 	Action statistics:
 	Sent 53396 bytes 1010 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
-
 	action order 4: mirred (Egress Redirect to device eth0) stolen
  	index 15 ref 1 bind 1 installed 8923 sec used 741 sec
  	Action statistics:
