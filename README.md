@@ -3,7 +3,6 @@ Speakers: Feng Li, Jamal Hadi Salim, Jae Won Chung, Sriram Sridhar
 Label Nuts-n-Bolts
 Session Type Talk
 Description
-
 Multi-access edge computing (MEC), recently introduced by ETSI industry Specification Group (ISG), is a network architecture that offers cloud-computing capabilities within the RAN or core network in the cellular world to allow processing of tasks closer to the cellular customer. It has, however, evolved to be generic to apply to any network for deploying applications and services as well as to store and process content in close proximity to mobile users.
 Current MEC solutions require either:
  a) deploying a specialized (often proprietary) mobile edge platform
