@@ -20,8 +20,8 @@ This solution is able to:
 	3. Potentially convert any Linux based network devices   (e.g. Wifi router, eNodeB) into application server without introducing new hardware.
 
 
-OPEN ALPR MEC POC:
-------------------
+OPEN ALPR - Mobile Edge Computing (MEC) Proof of Concept(POC):
+--------------------------------------------------------------
 
 This POC shows how linux traffic controller and linux namespace controller is used do route packets from a mobile phone to an edge compute network that runs automatic license plate recognition algorithm to figure out the license plate from a JPEG image.
 
