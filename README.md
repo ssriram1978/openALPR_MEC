@@ -244,8 +244,8 @@ Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card 
                         action skbmod smac 5c:b9:01:c3:d9:38 \
                         action mirred egress redirect dev eth0
 
-	Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_HOST_VETH parent ffff:
-	----------------------------------------------------------------------------------------------------
+	Verification command : tc -s filter ls dev IMAGE_HOST_VETH parent ffff:
+	-----------------------------------------------------------------------
 
     filter protocol ip pref 1 u32 chain 0 
     filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1 
