@@ -11,13 +11,13 @@ Current MEC solutions require either:
 
 A light weight mobile edge computing architecture which utilizes existing Linux kernel mechanisms, namely: Traffic Control (TC) utilities, and network Namespaces are used in this edge compute application (openALPR) hosted on MEC.
 
-
 This solution is able to:
-  	i) deploy real-time applications onto mobile edge  device without any modification to meet their low
+
+	1. Deploy real-time applications onto mobile edge  device without any modification to meet their low
      latency requirements;
- 	ii) provide computational offloading from either  battery powered mobile devices or back end
+ 	2. Provide computational offloading from either  battery powered mobile devices or back end
      services in cloud;
-	iii) potentially convert any Linux based network devices   (e.g. Wifi router, eNodeB) into application server without introducing new hardware.
+	3. Potentially convert any Linux based network devices   (e.g. Wifi router, eNodeB) into application server without introducing new hardware.
 
 
 OPEN ALPR MEC POC:
