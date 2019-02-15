@@ -111,8 +111,8 @@ Setup tc rules on the ingress QDISC of eth0 where packets from external world (M
 
 
 
-Verification command: /sbin/tc -s filter ls dev eth0 parent ffff:
------------------------------------------------------------------
+	Verification command: /sbin/tc -s filter ls dev eth0 parent ffff:
+	-----------------------------------------------------------------
     filter protocol ip pref 1 u32 chain 0 
     filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1 
     filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 terminal flowid ??? not_in_hw 
@@ -150,24 +150,31 @@ Set up tc rules on the ingress QDISC on the VETH plugged into the namespace cont
 
 ![](step5.png)
 
+	MATCH TCP SYN AND ACCEPT IT.                          
+	-----------------------------
+	tc -n imagedetection filter add dev IMAGE_CONT_VETH prio 1 parent ffff: protocol ip u32 \
+	match ip protocol 0x6 0xff \
+	match u8 0x2 0xff at 33 \
+	match ip dport 12345 0xff \
+	action skbedit ptype host
 
-  MATCH TCP ACK AND ACCEPT IT.
-  ---------------------------------
-    tc -n imagedetection filter add dev IMAGE_CONT_VETH prio 2 parent ffff: protocol ip u32 \
+  	MATCH TCP ACK AND ACCEPT IT.
+  	----------------------------
+    	tc -n imagedetection filter add dev IMAGE_CONT_VETH prio 2 parent ffff: protocol ip u32 \
         match ip protocol 0x6 0xff \
         match u8 0x10 0xff at 33 \
         match ip dport 12345 0xff \
         action skbedit ptype host
 
-  MATCH TCP AND SEND ACCEPT IT.
-  ------------------------------
+  	MATCH TCP ACCEPT IT.
+  	--------------------
     tc -n imagedetection filter add dev IMAGE_CONT_VETH prio 3 parent ffff: protocol ip u32 \
         match ip protocol 0x6 0xff \
         match ip dport 12345 0xff \
         action skbedit ptype host
 
-Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_CONT_VETH parent ffff:
-----------------------------------------------------------------------------------------------------
+	Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_CONT_VETH parent ffff:
+	----------------------------------------------------------------------------------------------------
     filter protocol ip pref 1 u32 chain 0 
     filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1 
     filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 terminal flowid ??? not_in_hw 
@@ -209,10 +216,31 @@ Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card 
 
 ![](step6.png)
 
+	MATCH TCP PROTOCOL and SOURCE PORT 12345,
+	-----------------------------------------
+	match the TCP FLAG SYN ACK,
+	---------------------------
+	set the source MAC as the MAC address of eth0
+	----------------------------------------------
+	and dest mac as the MAC address of the next hop (EDGE router).
+	--------------------------------------------------------------
+	tc filter add dev $specified_veth parent ffff: prio 1 protocol ip u32 \
+	match ip protocol 0x6 0xff \
+	match ip sport 12345 0xff \
+	match u8 0x12 0xff at 33 \
+	action skbedit ptype host \
+	action skbmod dmac e4:d3:f1:b1:b4:83 \
+	action skbmod smac 5c:b9:01:c3:d9:38 \
+	action mirred egress redirect dev eth0
+
+
 	
     MATCH TCP PROTOCOL, FOR ALL OTHER FLAGS, set SOURCE PORT 12345, 
+    ---------------------------------------------------------------
     set the source MAC as the MAC address of eth0
+    ----------------------------------------------
     and dest mac as the MAC address of the next hop (EDGE router).
+    ---------------------------------------------------------------
 
     tc filter add dev $specified_veth parent ffff: prio 2 protocol ip u32 \
                         match ip protocol 0x6 0xff \
@@ -223,8 +251,8 @@ Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card 
                         action skbmod smac 5c:b9:01:c3:d9:38 \
                         action mirred egress redirect dev eth0
 
-Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_HOST_VETH parent ffff:
-----------------------------------------------------------------------------------------------------
+	Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_HOST_VETH parent ffff:
+	----------------------------------------------------------------------------------------------------
 
     filter protocol ip pref 1 u32 chain 0 
     filter protocol ip pref 1 u32 chain 0 fh 800: ht divisor 1 
