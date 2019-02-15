@@ -212,7 +212,7 @@ Set up tc rules on the ingress QDISC on the VETH plugged into the namespace cont
 
 STEP 6
 -------
-Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card to route the packets coming from the namespace container back to the mobile phone.
+Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card to route the packets (TCP SYN ACK, FIN, FIN ACK,...) originating from the imagedetection namespace container back to the mobile phone.
 
 ![](step6.png)
 
