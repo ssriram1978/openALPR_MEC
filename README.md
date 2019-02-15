@@ -5,19 +5,19 @@ Description:
 ------------
 Multi-access edge computing (MEC), recently introduced by ETSI industry Specification Group (ISG), is a network architecture that offers cloud-computing capabilities within the RAN or core network in the cellular world to allow processing of tasks closer to the cellular customer. It has, however, evolved to be generic to apply to any network for deploying applications and services as well as to store and process content in close proximity to mobile users.
 Current MEC solutions require either:
- a) deploying a specialized (often proprietary) mobile edge platform
-or
- b) modifying existing applications (known as application splitting).
+ 	
+	a) deploying a specialized (often proprietary) mobile edge platform	
+	b) modifying existing applications (known as application splitting).
 
 A light weight mobile edge computing architecture which utilizes existing Linux kernel mechanisms, namely: Traffic Control (TC) utilities, and network Namespaces are used in this edge compute application (openALPR) hosted on MEC.
 
 
 This solution is able to:
-  i) deploy real-time applications onto mobile edge  device without any modification to meet their low
+  	i) deploy real-time applications onto mobile edge  device without any modification to meet their low
      latency requirements;
- ii) provide computational offloading from either  battery powered mobile devices or back end
+ 	ii) provide computational offloading from either  battery powered mobile devices or back end
      services in cloud;
-iii) potentially convert any Linux based network devices   (e.g. Wifi router, eNodeB) into application server without introducing new hardware.
+	iii) potentially convert any Linux based network devices   (e.g. Wifi router, eNodeB) into application server without introducing new hardware.
 
 
 OPEN ALPR MEC POC:
