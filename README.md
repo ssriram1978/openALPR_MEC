@@ -224,7 +224,7 @@ Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card 
 	----------------------------------------------
 	and dest mac as the MAC address of the next hop (EDGE router).
 	--------------------------------------------------------------
-	tc filter add dev $specified_veth parent ffff: prio 1 protocol ip u32 \
+	tc filter add dev IMAGE_HOST_VETH parent ffff: prio 1 protocol ip u32 \
 	match ip protocol 0x6 0xff \
 	match ip sport 12345 0xff \
 	match u8 0x12 0xff at 33 \
@@ -242,7 +242,7 @@ Set up tc rules on the ingress QDISC VETH exposed to the local host on x86 card 
     and dest mac as the MAC address of the next hop (EDGE router).
     ---------------------------------------------------------------
 
-    tc filter add dev $specified_veth parent ffff: prio 2 protocol ip u32 \
+    tc filter add dev IMAGE_HOST_VETH parent ffff: prio 2 protocol ip u32 \
                         match ip protocol 0x6 0xff \
                         match ip sport 12345 0xff \
                         match u8 0x12 0xff at 33 \
