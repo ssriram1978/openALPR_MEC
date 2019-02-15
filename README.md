@@ -1,8 +1,5 @@
-Session Viscum: A New Light Weight Architecture of Mobile Edge Computing
-------------------------------------------------------------------------
-Speakers: Feng Li, Jamal Hadi Salim, Jae Won Chung, Sriram Sridhar
-Label Nuts-n-Bolts
-Session Type Talk
+A New Light Weight Architecture of Mobile Edge Computing
+---------------------------------------------------------
 
 Description:
 ------------
@@ -12,19 +9,15 @@ Current MEC solutions require either:
 or
  b) modifying existing applications (known as application splitting).
 
-In this paper, we first review the current MEC architecture introduced by ISG, and then propose an
-alternative light weight mobile edge computing architecture which utilizes existing Linux kernel mechanisms, namely: Traffic Control (TC) utilities, and network Namespaces.
+A light weight mobile edge computing architecture which utilizes existing Linux kernel mechanisms, namely: Traffic Control (TC) utilities, and network Namespaces are used in this edge compute application (openALPR) hosted on MEC.
 
 
-Our solution is able to:
+This solution is able to:
   i) deploy real-time applications onto mobile edge  device without any modification to meet their low
      latency requirements;
  ii) provide computational offloading from either  battery powered mobile devices or back end
      services in cloud;
 iii) potentially convert any Linux based network devices   (e.g. Wifi router, eNodeB) into application server without introducing new hardware.
-
-
-The talk will go into details on how the Linux facilities are used.
 
 
 OPEN ALPR MEC POC:
