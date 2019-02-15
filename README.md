@@ -81,8 +81,8 @@ Set up a namespace container as shown below.
     8. ip netns exec imagedetection sysctl -w net.ipv4.tcp_fwmark_accept=1
     9. ip netns exec imagedetection sysctl -w net.ipv4.fwmark_reflect=1
     10. ip -n imagedetection rule add iif IMAGE_CONT_VETH lookup 100
-    11. ip |n imagedetection -6 rule add iif IMAGE_CONT_VETH lookup 100 
-    12. ip |n imagedetection route add local 0.0.0.0/0 dev lo table 100
+    11. ip -n imagedetection -6 rule add iif IMAGE_CONT_VETH lookup 100 
+    12. ip -n imagedetection route add local 0.0.0.0/0 dev lo table 100
     13. ip -n imagedetection addr add 150.0.0.1/16 dev IMAGE_CONT_VETH
     14. ip -n imagedetection route add default via 150.0.0.2
     15. ip addr add 150.0.0.2/16 dev IMAGE_HOST_VETH
@@ -118,21 +118,25 @@ Verification command: /sbin/tc -s filter ls dev eth0 parent ffff:
     filter protocol ip pref 1 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 terminal flowid ??? not_in_hw 
       match 00060000/00ff0000 at 8
       match 00000039/000000ff at 20
-	  action order 1: skbmod pipe set smac 5c:b9:01:c3:d9:38 
+	
+	action order 1: skbmod pipe set smac 5c:b9:01:c3:d9:38 
 	  index 13 ref 1 bind 1 installed 9031 sec used 849 sec
 	Action statistics:
 	Sent 2459206 bytes 1764 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
+	
 	action order 2: skbmod pipe set dmac 70:00:00:00:00:00 
 	 index 14 ref 1 bind 1 installed 9031 sec used 849 sec
 	Action statistics:
 	Sent 2459206 bytes 1764 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
+	
 	action order 3:  skbedit ptype host pipe
 	 index 7 ref 1 bind 1 installed 9031 sec used 849 sec
  	Action statistics:
 	Sent 2459206 bytes 1764 pkt (dropped 0, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0 
+	
 	action order 4: mirred (Egress Redirect to device IMAGE_HOST_VETH) stolen
  	index 7 ref 1 bind 1 installed 9031 sec used 849 sec
  	Action statistics:
@@ -228,21 +232,25 @@ Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_HO
     match 00060000/00ff0000 at 8
     match 00120000/00ff0000 at 32
     match 00390000/00ff0000 at 20
+	  
 	  action order 1:  skbedit ptype host pipe
 	  index 17 ref 1 bind 1 installed 8923 sec used 743 sec
  	  Action statistics:
 	  Sent 60 bytes 1 pkt (dropped 0, overlimits 0 requeues 0) 
 	  backlog 0b 0p requeues 0 
+	  
 	  action order 2: skbmod pipe set dmac e4:d3:f1:b1:b4:83 
 	  index 15 ref 1 bind 1 installed 8923 sec used 743 sec
 	  Action statistics:
 	  Sent 60 bytes 1 pkt (dropped 0, overlimits 0 requeues 0) 
 	  backlog 0b 0p requeues 0 
+	  
 	  action order 3: skbmod pipe set smac 5c:b9:01:c3:d9:38 
 	  index 16 ref 1 bind 1 installed 8923 sec used 743 sec
 	  Action statistics:
 	  Sent 60 bytes 1 pkt (dropped 0, overlimits 0 requeues 0) 
 	  backlog 0b 0p requeues 0 
+	  
 	  action order 4: mirred (Egress Redirect to device eth0) stolen
  	  index 14 ref 1 bind 1 installed 8923 sec used 743 sec
  	  Action statistics:
@@ -254,21 +262,25 @@ Verification command : ip netns exec imagedetection tc -s filter ls dev IMAGE_HO
     filter protocol ip pref 2 u32 chain 0 fh 801::800 order 2048 key ht 801 bkt 0 terminal flowid ??? not_in_hw 
     match 00060000/00ff0000 at 8
     match 00390000/00ff0000 at 20
+	  
 	  action order 1:  skbedit ptype host pipe
 	  index 18 ref 1 bind 1 installed 8923 sec used 741 sec
  	  Action statistics:
 	  Sent 53396 bytes 1010 pkt (dropped 0, overlimits 0 requeues 0) 
 	  backlog 0b 0p requeues 0 
+	  
 	  action order 2: skbmod pipe set dmac e4:d3:f1:b1:b4:83 
 	  index 17 ref 1 bind 1 installed 8923 sec used 741 sec
 	  Action statistics:
 	  Sent 53396 bytes 1010 pkt (dropped 0, overlimits 0 requeues 0) 
 	  backlog 0b 0p requeues 0 
+	  
 	  action order 3: skbmod pipe set smac 5c:b9:01:c3:d9:38 
 	  index 18 ref 1 bind 1 installed 8923 sec used 741 sec
 	  Action statistics:
 	  Sent 53396 bytes 1010 pkt (dropped 0, overlimits 0 requeues 0) 
 	  backlog 0b 0p requeues 0 
+	  
 	  action order 4: mirred (Egress Redirect to device eth0) stolen
  	  index 15 ref 1 bind 1 installed 8923 sec used 741 sec
  	  Action statistics:
